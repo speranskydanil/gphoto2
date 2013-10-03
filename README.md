@@ -2,7 +2,7 @@
 
 ## Description
 
-    Simple adapter for gPhoto2 written in python.
+Simple adapter for gPhoto2 written in python.
 
 ## Usage
 
