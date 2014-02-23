@@ -1,0 +1,1 @@
+{"name":"Gphoto2","tagline":"Simple adapter for gPhoto2 written in python.","body":"# gPhoto2\r\n\r\n## Description\r\n\r\nSimple adapter for gPhoto2 written in python.\r\n\r\n## Usage\r\n\r\n    import gphoto2\r\n    gphoto2.devices()[0].capture('file.%C')\r\n\r\n","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
