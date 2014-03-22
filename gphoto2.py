@@ -1,57 +1,67 @@
 #!/usr/bin/env python3
 
+
 import subprocess
 
+
 def devices():
-  return Device.all()
+    return Device.all()
+
 
 class Device:
-  @staticmethod
-  def _exec(cmd):
-    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
 
-  @staticmethod
-  def raise_exception_if_not_installed():
-    if not Device._exec('command -v gphoto2'): raise Exception('gPhoto2 is not installed')
+    @staticmethod
+    def _exec(cmd):
+        return subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
 
-  @classmethod
-  def all(cls):
-    cls.raise_exception_if_not_installed()
+    @staticmethod
+    def raise_exception_if_not_installed():
+        if not Device._exec('command -v gphoto2'):
+            raise Exception('gPhoto2 is not installed')
 
-    description = cls._exec('gphoto2 --auto-detect | grep "usb"').strip()
-    if not description: return []
+    @classmethod
+    def all(cls):
+        cls.raise_exception_if_not_installed()
 
-    devices = []
+        description = cls._exec('gphoto2 --auto-detect | grep "usb"').strip()
+        if not description:
+            return []
 
-    records = description.split('\n')
+        devices = []
 
-    for record in records:
-      camera, port = record.split('usb:')
-      camera, port = camera.strip(), 'usb:' + port.strip()
-      devices.append(Device(camera, port))
+        records = description.split('\n')
 
-    return sorted(devices)
+        for record in records:
+            camera, port = record.split('usb:')
+            camera, port = camera.strip(), 'usb:' + port.strip()
+            devices.append(Device(camera, port))
 
-  def __init__(self, camera, port):
-    self.camera = camera
-    self.port = port
+        return sorted(devices)
 
-  def capture(self, path):
-    self.raise_exception_if_not_installed()
+    def __init__(self, camera, port):
+        self.camera = camera
+        self.port = port
 
-    cmd_tmpl = 'gphoto2 --quiet --camera "{0}" --port {1} --capture-image-and-download --filename "{2}"'
-    cmd = cmd_tmpl.format(self.camera, self.port, path)
-    self._exec(cmd)
+    def capture(self, path):
+        self.raise_exception_if_not_installed()
 
-  def __str__(self):
-    return '{0} {1}'.format(self.camera, self.port)
+        cmd_tmpl = ('gphoto2 --quiet --camera "{0}" --port {1}'
+                    ' --capture-image-and-download --filename "{2}"')
+        cmd = cmd_tmpl.format(self.camera, self.port, path)
+        self._exec(cmd)
 
-  def __repr__(self):
-    return 'Device("{0}", "{1}")'.format(self.camera, self.port)
+    def __str__(self):
+        return '{0} {1}'.format(self.camera, self.port)
 
-  def __lt__(self, other):
-    return self.port < other.port
+    def __repr__(self):
+        return 'Device("{0}", "{1}")'.format(self.camera, self.port)
 
-  def __hash__(self):
-    return hash((self.camera, self.port))
+    def __lt__(self, other):
+        return self.port < other.port
+
+    def __hash__(self):
+        return hash((self.camera, self.port))
 
